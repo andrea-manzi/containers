@@ -1,6 +1,7 @@
 FROM centos:7
 
 ARG TAG
+ADD "http://repository.egi.eu/sw/production/cas/1/current/repo-files/EGI-trustanchors.repo" "/etc/yum.repos.d/"
 
 RUN yum install -y epel-release.noarch && \
     yum clean all && \
@@ -10,11 +11,14 @@ RUN yum upgrade -y && \
     rm -rf /var/cache/yum
 RUN yum -y install https://repo.ius.io/ius-release-el7.rpm && \
     yum install -y python36u-pip voms-clients-java gfal2-all gfal2-util gfal2-python3 xrootd-client\
-                   nordugrid-arc-client nordugrid-arc-plugins-gfal \
+                   nordugrid-arc-client nordugrid-arc-plugins-gfal ca-policy-egi-core \
                    nordugrid-arc-plugins-globus nordugrid-arc-plugins-s3 \
                    nordugrid-arc-plugins-xrootd && \
     yum clean all && \
     rm -rf /var/cache/yum
+
+ADD "http://dmc-repo.web.cern.ch/dmc-repo/dmc-ci-el7.repo" "/etc/yum.repos.d/"
+RUN /usr/bin/yum install -y voms-config-wlcg  voms-config-vo-dteam
 
 # Upgrade pip & setuptools and install Rucio
 RUN python3.6 -m pip install --no-cache-dir --upgrade pip && \
